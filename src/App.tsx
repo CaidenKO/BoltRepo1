@@ -697,6 +697,19 @@ function App() {
               <span className="text-2xl font-bold text-gray-800">GameDev Pro</span>
             </div>
             
+            {/* Cart Icon */}
+            <div className="hidden md:flex items-center space-x-4">
+              <button
+                onClick={() => setShowCart(true)}
+                className="relative p-2 text-gray-700 hover:text-purple-600 transition-colors"
+              >
+                <div className="w-6 h-6 border-2 border-current rounded-sm"></div>
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-purple-600 text-white text-xs rounded-full flex items-center justify-center">
+                  {getTotalItems()}
+                </div>
+              </button>
+            </div>
+            
             {/* Desktop Navigation */}
             <div className="hidden md:flex space-x-8">
               {[
