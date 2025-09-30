@@ -4,6 +4,119 @@ import { Menu, X, Star, Calendar, Users, Trophy, Gamepad2, Zap, Shield, Crown, S
 function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [cart, setCart] = useState([]);
+  const [showCart, setShowCart] = useState(false);
+
+  const shopItems = [
+    {
+      id: 1,
+      name: 'GameDev Hoodie',
+      category: 'Clothing',
+      price: 49.99,
+      originalPrice: 69.99,
+      discount: '29% OFF',
+      image: 'https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=400',
+      description: 'Premium quality hoodie with embroidered GameDev logo. Perfect for coding sessions.',
+      features: ['100% Cotton', 'Embroidered Logo', 'Kangaroo Pocket', 'Unisex Fit']
+    },
+    {
+      id: 2,
+      name: 'Unity Mastery Pack',
+      category: 'Coding Tips',
+      price: 29.99,
+      originalPrice: 49.99,
+      discount: '40% OFF',
+      image: 'https://images.pexels.com/photos/574071/pexels-photo-574071.jpeg?auto=compress&cs=tinysrgb&w=400',
+      description: 'Complete Unity development guide with 50+ advanced tips and tricks.',
+      features: ['50+ Pro Tips', 'Video Tutorials', 'Source Code', 'Lifetime Updates']
+    },
+    {
+      id: 3,
+      name: 'Game Design Notebook',
+      category: 'Notebooks',
+      price: 19.99,
+      originalPrice: 24.99,
+      discount: '20% OFF',
+      image: 'https://images.pexels.com/photos/159832/book-address-book-learning-learn-159832.jpeg?auto=compress&cs=tinysrgb&w=400',
+      description: 'Professional game design notebook with templates and planning sheets.',
+      features: ['200 Pages', 'Design Templates', 'Hardcover', 'Dot Grid Pages']
+    },
+    {
+      id: 4,
+      name: 'Pixel Art T-Shirt',
+      category: 'Clothing',
+      price: 24.99,
+      originalPrice: 34.99,
+      discount: '29% OFF',
+      image: 'https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=400',
+      description: 'Retro pixel art design t-shirt for indie game developers.',
+      features: ['Soft Cotton Blend', 'Vintage Design', 'Multiple Sizes', 'Machine Washable']
+    },
+    {
+      id: 5,
+      name: 'C# Cheat Sheet Pack',
+      category: 'Coding Tips',
+      price: 14.99,
+      originalPrice: 19.99,
+      discount: '25% OFF',
+      image: 'https://images.pexels.com/photos/574071/pexels-photo-574071.jpeg?auto=compress&cs=tinysrgb&w=400',
+      description: 'Essential C# reference cards for game development.',
+      features: ['Quick Reference', 'Printable PDF', 'Syntax Examples', 'Best Practices']
+    },
+    {
+      id: 6,
+      name: 'Game Dev Sticker Pack',
+      category: 'Accessories',
+      price: 9.99,
+      originalPrice: 14.99,
+      discount: '33% OFF',
+      image: 'https://images.pexels.com/photos/1029757/pexels-photo-1029757.jpeg?auto=compress&cs=tinysrgb&w=400',
+      description: 'Collection of 20 premium vinyl stickers for your laptop and gear.',
+      features: ['20 Unique Designs', 'Waterproof Vinyl', 'High Quality Print', 'Perfect for Laptops']
+    }
+  ];
+
+  const addToCart = (item) => {
+    setCart(prevCart => {
+      const existingItem = prevCart.find(cartItem => cartItem.id === item.id);
+      if (existingItem) {
+        return prevCart.map(cartItem =>
+          cartItem.id === item.id
+            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            : cartItem
+        );
+      }
+      return [...prevCart, { ...item, quantity: 1 }];
+    });
+  };
+
+  const removeFromCart = (itemId) => {
+    setCart(prevCart => prevCart.filter(item => item.id !== itemId));
+  };
+
+  const updateQuantity = (itemId, newQuantity) => {
+    if (newQuantity === 0) {
+      removeFromCart(itemId);
+      return;
+    }
+    setCart(prevCart =>
+      prevCart.map(item =>
+        item.id === itemId ? { ...item, quantity: newQuantity } : item
+      )
+    );
+  };
+
+  const getTotalPrice = () => {
+    return cart.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
+  };
+
+  const getTotalItems = () => {
+    return cart.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  const startFreeTrial = (planName) => {
+    alert(`🎉 Awesome! You've started your 7-day free trial for ${planName}!\n\nWhat happens next:\n✅ Full access to all features\n✅ No credit card required\n✅ Cancel anytime\n\nWe'll send you an email with your login details shortly!`);
+  };
 
   const portfolioItems = [
     {
