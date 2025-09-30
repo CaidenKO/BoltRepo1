@@ -6,6 +6,10 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [cart, setCart] = useState([]);
   const [showCart, setShowCart] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [customerEmail, setCustomerEmail] = useState('');
+  const [orderComplete, setOrderComplete] = useState(false);
 
   const shopItems = [
     {
@@ -28,7 +32,9 @@ function App() {
       discount: '40% OFF',
       image: 'https://images.pexels.com/photos/574071/pexels-photo-574071.jpeg?auto=compress&cs=tinysrgb&w=400',
       description: 'Complete Unity development guide with 50+ advanced tips and tricks.',
-      features: ['50+ Pro Tips', 'Video Tutorials', 'Source Code', 'Lifetime Updates']
+      features: ['50+ Pro Tips', 'Video Tutorials', 'Source Code', 'Lifetime Updates'],
+      detailedDescription: 'Master Unity game development with our comprehensive guide featuring advanced techniques, optimization strategies, and professional workflows. Includes exclusive video content, downloadable source code, and regular updates with new Unity features.',
+      specifications: ['PDF Format: 200+ pages', 'Video Content: 10+ hours', 'Source Files: 25+ projects', 'Updates: Lifetime access']
     },
     {
       id: 3,
@@ -50,7 +56,9 @@ function App() {
       discount: '29% OFF',
       image: 'https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=400',
       description: 'Retro pixel art design t-shirt for indie game developers.',
-      features: ['Soft Cotton Blend', 'Vintage Design', 'Multiple Sizes', 'Machine Washable']
+      features: ['Soft Cotton Blend', 'Vintage Design', 'Multiple Sizes', 'Machine Washable'],
+      detailedDescription: 'Show your indie game developer pride with this premium pixel art t-shirt. Features a unique 8-bit inspired design that celebrates retro gaming culture. Made from ultra-soft cotton blend for maximum comfort during long coding sessions.',
+      specifications: ['Material: 60% Cotton, 40% Polyester', 'Sizes: XS - 3XL', 'Print: High-quality screen print', 'Care: Machine washable']
     },
     {
       id: 5,
@@ -742,12 +750,20 @@ function App() {
                     Save ${(item.originalPrice - item.price).toFixed(2)}
                   </div>
                 </div>
-                <button
-                  onClick={() => addToCart(item)}
-                  className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105"
-                >
-                  Add to Cart
-                </button>
+                <div className="flex flex-col space-y-2">
+                  <button
+                    onClick={() => setSelectedProduct(item)}
+                    className="px-4 py-2 border-2 border-purple-600 text-purple-600 rounded-lg font-semibold hover:bg-purple-50 transition-all duration-300 text-sm"
+                  >
+                    View Details
+                  </button>
+                  <button
+                    onClick={() => addToCart(item)}
+                    className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105"
+                  >
+                    Add to Cart
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -930,15 +946,15 @@ function App() {
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                       {getTotalItems()}
                     </span>
-                  )}
-                </div>
-              </button>
-            </div>
+    {/* Product Details Modal */}
+    {selectedProduct && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
 
             {/* Mobile menu button */}
-            <div className="md:hidden">
+              <h3 className="text-2xl font-bold text-gray-800">{selectedProduct.name}</h3>
               <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                onClick={() => setSelectedProduct(null)}
                 className="text-gray-700 hover:text-purple-600"
               >
                 {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -952,10 +968,59 @@ function App() {
               {[
                 { id: 'home', label: 'Home' },
                 { id: 'portfolio', label: 'Portfolio' },
-                { id: 'news', label: 'News' },
-                { id: 'pricing', label: 'Pricing Plans' },
-                { id: 'contact', label: 'Contact' }
-              ].map((tab) => (
+            <div className="grid md:grid-cols-2 gap-8">
+              <div>
+                <img 
+                  src={selectedProduct.image} 
+                  alt={selectedProduct.name} 
+                  className="w-full h-64 object-cover rounded-lg shadow-lg"
+                />
+                <div className="mt-4 flex justify-between items-center">
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-3xl font-bold text-purple-600">${selectedProduct.price}</span>
+                      <span className="text-gray-500 line-through">${selectedProduct.originalPrice}</span>
+                    </div>
+                    <div className="text-lg text-green-600 font-semibold">
+                      {selectedProduct.discount} - Save ${(selectedProduct.originalPrice - selectedProduct.price).toFixed(2)}
+                    </div>
+                  </div>
+                  <span className="px-3 py-1 bg-purple-100 text-purple-600 rounded-full font-semibold">
+                    {selectedProduct.category}
+                  </span>
+                </div>
+              </div>
+              
+              <div>
+                <h4 className="text-xl font-bold text-gray-800 mb-4">Product Description</h4>
+                <p className="text-gray-600 mb-6">
+                  {selectedProduct.detailedDescription || selectedProduct.description}
+                </p>
+                
+                <h4 className="text-xl font-bold text-gray-800 mb-4">Features</h4>
+                <ul className="space-y-2 mb-6">
+                  {selectedProduct.features.map((feature, index) => (
+                    <li key={index} className="flex items-center text-gray-700">
+                      <span className="w-2 h-2 bg-purple-600 rounded-full mr-3"></span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                
+                {selectedProduct.specifications && (
+                  <>
+                    <h4 className="text-xl font-bold text-gray-800 mb-4">Specifications</h4>
+                    <ul className="space-y-2 mb-6">
+                      {selectedProduct.specifications.map((spec, index) => (
+                        <li key={index} className="flex items-center text-gray-700">
+                          <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
+                          {spec}
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+                
                 <button
                   key={tab.id}
                   onClick={() => {
@@ -963,64 +1028,226 @@ function App() {
                     setIsMenuOpen(false);
                   }}
                   className={`block w-full text-left px-3 py-2 rounded-md font-medium transition-colors duration-200 ${
-                    activeTab === tab.id
-                      ? 'text-purple-600 bg-purple-100'
-                      : 'text-gray-700 hover:text-purple-600 hover:bg-gray-100'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </nav>
-
-      {/* Main Content */}
-      <main>
-        {renderSection()}
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white py-12">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <Gamepad2 className="w-8 h-8 text-purple-400" />
-                <span className="text-2xl font-bold">GameDev Pro</span>
-              </div>
-              <p className="text-gray-400">
-                Creating immersive gaming experiences that captivate and inspire players worldwide.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-              <ul className="space-y-2">
-                <li><button onClick={() => setActiveTab('portfolio')} className="text-gray-400 hover:text-white transition-colors">Portfolio</button></li>
-                <li><button onClick={() => setActiveTab('news')} className="text-gray-400 hover:text-white transition-colors">News</button></li>
-                <li><button onClick={() => setActiveTab('pricing')} className="text-gray-400 hover:text-white transition-colors">Pricing</button></li>
-                <li><button onClick={() => setActiveTab('shop')} className="text-gray-400 hover:text-white transition-colors">Shop</button></li>
-                <li><button onClick={() => setActiveTab('contact')} className="text-gray-400 hover:text-white transition-colors">Contact</button></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Connect</h3>
-              <p className="text-gray-400 mb-4">
-                Follow my journey and get updates on the latest projects.
-              </p>
-              <div className="flex space-x-4">
-                <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center hover:bg-purple-700 transition-colors cursor-pointer">
-                  <Users className="w-5 h-5" />
-                </div>
-                <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors cursor-pointer">
-                  <Zap className="w-5 h-5" />
-                </div>
-              </div>
             </div>
           </div>
-          <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 GameDev Pro. All rights reserved.</p>
+        </div>
+      </div>
+    )}
+
+    {/* Shopping Cart Sidebar */}
+    {showCart && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
+        <div className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-xl">
+          <div className="flex flex-col h-full">
+            <div className="p-6 border-b bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+              <div className="flex justify-between items-center">
+                <h3 className="text-2xl font-bold">Shopping Cart</h3>
+                <button
+                  onClick={() => setShowCart(false)}
+                  className="text-white hover:text-gray-200 text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+              <p className="text-purple-100 mt-2">{getTotalItems()} items • ${getTotalPrice()}</p>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-6">
+              {cart.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="text-6xl mb-4">🛒</div>
+                  <p className="text-gray-600 text-lg mb-4">Your cart is empty</p>
+                  <button
+                    onClick={() => setShowCart(false)}
+                    className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                  >
+                    Continue Shopping
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {cart.map((item) => (
+                    <div key={item.id} className="bg-gray-50 rounded-lg p-4">
+                      <div className="flex items-start space-x-3">
+                        <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-lg" />
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-800 text-sm">{item.name}</h4>
+                          <p className="text-purple-600 font-bold">${item.price}</p>
+                          <div className="flex items-center justify-between mt-2">
+                            <div className="flex items-center space-x-2">
+                              <button
+                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 text-sm"
+                              >
+                                -
+                              </button>
+                              <span className="w-8 text-center font-semibold text-sm">{item.quantity}</span>
+                              <button
+                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 text-sm"
+                              >
+                                +
+                              </button>
+                            </div>
+                            <button
+                              onClick={() => removeFromCart(item.id)}
+                              className="text-red-500 hover:text-red-700 text-sm font-medium"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            {cart.length > 0 && (
+              <div className="border-t p-6 bg-gray-50">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-xl font-bold text-gray-800">Total: ${getTotalPrice()}</span>
+                  <span className="text-gray-600">({getTotalItems()} items)</span>
+                </div>
+                <div className="space-y-3">
+                  <button
+                    onClick={() => setShowCart(false)}
+                    className="w-full px-6 py-3 border-2 border-purple-600 text-purple-600 rounded-lg font-semibold hover:bg-purple-50 transition-colors"
+                  >
+                    Continue Shopping
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowCart(false);
+                      setShowCheckout(true);
+                    }}
+                    className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300"
+                  >
+                    Proceed to Checkout
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Checkout Modal */}
+    {showCheckout && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="p-6 border-b bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+            <div className="flex justify-between items-center">
+              <h3 className="text-2xl font-bold">Secure Checkout</h3>
+              <button
+                onClick={() => setShowCheckout(false)}
+                className="text-white hover:text-gray-200 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+            <p className="text-purple-100 mt-2">Complete your order securely</p>
+          </div>
+          
+          <div className="p-6">
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Order Summary */}
+              <div>
+                <h4 className="text-xl font-bold text-gray-800 mb-4">Order Summary</h4>
+                <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                  <div className="space-y-3">
+                    {cart.map((item) => (
+                      <div key={item.id} className="flex justify-between items-center">
+                        <div className="flex items-center space-x-3">
+                          <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded" />
+                          <div>
+                            <p className="font-semibold text-gray-800 text-sm">{item.name}</p>
+                            <p className="text-gray-600 text-sm">Qty: {item.quantity}</p>
+                          </div>
+                        </div>
+                        <p className="font-bold text-purple-600">${(item.price * item.quantity).toFixed(2)}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="border-t mt-4 pt-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xl font-bold text-gray-800">Total</span>
+                      <span className="text-2xl font-bold text-purple-600">${getTotalPrice()}</span>
+                    </div>
+                    <p className="text-gray-600 text-sm mt-1">{getTotalItems()} items</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Customer Information */}
+              <div>
+                <h4 className="text-xl font-bold text-gray-800 mb-4">Customer Information</h4>
+                <form className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email Address <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      value={customerEmail}
+                      onChange={(e) => setCustomerEmail(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      placeholder="your@email.com"
+                      required
+                    />
+                    <p className="text-sm text-gray-500 mt-1">
+                      📧 Order confirmation will be sent to this email
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                    <input
+                      type="text"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      placeholder="John Doe"
+                    />
+                  </div>
+                  
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="flex items-center space-x-2 text-green-700">
+                      <span>🔒</span>
+                      <span className="font-semibold">Secure Payment</span>
+                    </div>
+                    <p className="text-green-600 text-sm mt-1">
+                      Your information is protected with 256-bit SSL encryption
+                    </p>
+                  </div>
+                  
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-center space-x-2 text-blue-700">
+                      <span>📦</span>
+                      <span className="font-semibold">Digital Delivery</span>
+                    </div>
+                    <p className="text-blue-600 text-sm mt-1">
+                      Digital items will be delivered instantly to your email
+                    </p>
+                  </div>
+                </form>
+                
+                <div className="mt-6 space-y-3">
+                  <button
+                    onClick={() => setShowCheckout(false)}
+                    className="w-full px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                  >
+                    Back to Cart
+                  </button>
+                  <button
+                    onClick={processOrder}
+                    className="w-full px-6 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-lg font-semibold hover:from-green-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                  >
+                    Complete Order - ${getTotalPrice()}
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </footer>
