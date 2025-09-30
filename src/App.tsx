@@ -682,6 +682,7 @@ function App() {
       case 'news': return renderNews();
       case 'contact': return renderContact();
       case 'pricing': return renderPricing();
+      case 'shop': return renderShop();
       default: return renderHome();
     }
   };
@@ -704,6 +705,7 @@ function App() {
                 { id: 'portfolio', label: 'Portfolio' },
                 { id: 'news', label: 'News' },
                 { id: 'pricing', label: 'Pricing Plans' },
+                { id: 'shop', label: 'Shop' },
                 { id: 'contact', label: 'Contact' }
               ].map((tab) => (
                 <button
@@ -718,6 +720,22 @@ function App() {
                   {tab.label}
                 </button>
               ))}
+              
+              {/* Cart Button */}
+              <button
+                onClick={() => setShowCart(true)}
+                className="relative px-3 py-2 rounded-md font-medium text-gray-700 hover:text-purple-600 hover:bg-gray-100 transition-colors duration-200"
+              >
+                <div className="flex items-center space-x-1">
+                  <span>🛒</span>
+                  <span>Cart</span>
+                  {getTotalItems() > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {getTotalItems()}
+                    </span>
+                  )}
+                </div>
+              </button>
             </div>
 
             {/* Mobile menu button */}
