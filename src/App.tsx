@@ -704,7 +704,6 @@ function App() {
                 { id: 'portfolio', label: 'Portfolio' },
                 { id: 'news', label: 'News' },
                 { id: 'pricing', label: 'Pricing Plans' },
-                { id: 'shop', label: 'Shop' },
                 { id: 'contact', label: 'Contact' }
               ].map((tab) => (
                 <button
@@ -740,7 +739,6 @@ function App() {
                 { id: 'portfolio', label: 'Portfolio' },
                 { id: 'news', label: 'News' },
                 { id: 'pricing', label: 'Pricing Plans' },
-                { id: 'shop', label: 'Shop' },
                 { id: 'contact', label: 'Contact' }
               ].map((tab) => (
                 <button
@@ -787,6 +785,7 @@ function App() {
                 <li><button onClick={() => setActiveTab('portfolio')} className="text-gray-400 hover:text-white transition-colors">Portfolio</button></li>
                 <li><button onClick={() => setActiveTab('news')} className="text-gray-400 hover:text-white transition-colors">News</button></li>
                 <li><button onClick={() => setActiveTab('pricing')} className="text-gray-400 hover:text-white transition-colors">Pricing</button></li>
+                <li><button onClick={() => setActiveTab('shop')} className="text-gray-400 hover:text-white transition-colors">Shop</button></li>
                 <li><button onClick={() => setActiveTab('contact')} className="text-gray-400 hover:text-white transition-colors">Contact</button></li>
               </ul>
             </div>
